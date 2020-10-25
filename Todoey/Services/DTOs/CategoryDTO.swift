@@ -7,3 +7,7 @@
 //
 
 import Foundation
+
+struct CategoryDTO {
+    let name: String
+}

@@ -14,4 +14,9 @@ extension UITableViewCell {
         self.textLabel?.text = todoItem.title
         self.accessoryType = todoItem.isDone ? .checkmark : .none
     }
+    
+    func configure(_ item: CategoryDTO) {
+        self.textLabel?.text = item.name
+    }
+    
 }

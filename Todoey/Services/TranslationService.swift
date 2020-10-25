@@ -9,10 +9,26 @@
 import Foundation
 import CoreData
 
+extension Category {
+
+    func toDto() -> CategoryDTO {
+        return CategoryDTO(name: self.name!)
+    }
+}
+
+extension CategoryDTO {
+    func toEntity(with context: NSManagedObjectContext) -> Category {
+        let category = Category(context: context)
+        category.name = self.name
+        return category
+    }
+}
+
 class TranslationService {
 
-    func translate(from item: Item?) -> TodoItemDTO? {
-        guard let item = item else { return nil }
+
+    func translate(from item: Item) -> TodoItemDTO {
+//        guard let item = item else { return nil }
 
         return TodoItemDTO(title: item.title!, isDone: item.done)
     }
@@ -23,7 +39,7 @@ class TranslationService {
         let item = Item(context: context)
         item.title = dto.title
         item.done = dto.isDone
-
+        
         return item
     }
 

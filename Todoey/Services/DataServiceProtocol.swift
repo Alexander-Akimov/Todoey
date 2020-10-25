@@ -7,3 +7,15 @@
 //
 
 import Foundation
+
+protocol DataServiceProtocol {
+    associatedtype T
+
+    func getItemsCount() -> Int
+    func getItem(by index: Int) -> T
+    func addItem(_ item: T)
+    func updateItem(_ item: T, at index: Int)
+    func deleteItem(at index: Int)
+    func saveItems()
+    func loadItems()
+}

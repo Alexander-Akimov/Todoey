@@ -14,7 +14,7 @@ class TodoListCDViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        dataService.loadItems()
+        dataService.loadCategoryItems()
     }
 
     func setCategory(category: Category) {
@@ -83,6 +83,7 @@ extension TodoListCDViewController {
         item.isDone = !item.isDone
 
         dataService.updateItem(item, at: indexPath.row)
+        dataService.saveItems()
 
         tableView.reloadRows(at: [indexPath], with: .middle)
         tableView.deselectRow(at: indexPath, animated: true)
@@ -104,8 +105,8 @@ extension TodoListCDViewController: UISearchBarDelegate {
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text?.count == 0 {
-            dataService.loadItems()
-
+            dataService.loadCategoryItems()
+            
             tableView.reloadData()
 
             DispatchQueue.main.async {
