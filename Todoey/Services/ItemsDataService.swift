@@ -10,19 +10,7 @@ import Foundation
 import UIKit
 import CoreData
 
-protocol DataServiceProtocol {
-    associatedtype T
-
-    func getItemsCount() -> Int
-    func getItem(by index: Int) -> T?
-    func addItem(_ todoItem: T)
-    func updateItem(_ todoItem: T, at index: Int)
-    func deleteItem(at index: Int)
-    func saveItems()
-    func loadItems()
-}
-
-class DataService: DataServiceProtocol {
+class ItemsDataService: DataServiceProtocol {
 
     typealias T = TodoItemDTO
 
@@ -84,7 +72,6 @@ class DataService: DataServiceProtocol {
     }
 
     private func loadItems(with request: NSFetchRequest<Item>) {
-
         do {
             self.itemsArray = try context.fetch(request)
         } catch {

@@ -8,7 +8,9 @@
 
 import Foundation
 
-struct TodoItemDTO: Codable {
+protocol DtoProtocol { }
+
+struct TodoItemDTO: Codable, DtoProtocol {
     let title: String
     var isDone: Bool
 }

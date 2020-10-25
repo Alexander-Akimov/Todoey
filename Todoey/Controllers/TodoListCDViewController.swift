@@ -10,11 +10,15 @@ import UIKit
 
 class TodoListCDViewController: UITableViewController {
 
-    private let dataService = DataService()
+    private let dataService = ItemsDataService()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         dataService.loadItems()
+    }
+
+    func setCategory(category: Category) {
+        dataService.selectedCategory = category
     }
 
     //MARK: - Add New todo Item
@@ -60,9 +64,9 @@ extension TodoListCDViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let todoItemCell = tableView.dequeueReusableCell(withIdentifier: K.cellIdentifier, for: indexPath)
+        let todoItemCell = tableView.dequeueReusableCell(withIdentifier: K.todoItemCell, for: indexPath)
 
-        let item = dataService.getItem(by: indexPath.row)!
+        let item = dataService.getItem(by: indexPath.row)
 
         todoItemCell.configure(item)
 
@@ -75,12 +79,11 @@ extension TodoListCDViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        /**/
-        var item = dataService.getItem(by: indexPath.row)!
+        var item = dataService.getItem(by: indexPath.row)
         item.isDone = !item.isDone
 
         dataService.updateItem(item, at: indexPath.row)
-        
+
         tableView.reloadRows(at: [indexPath], with: .middle)
         tableView.deselectRow(at: indexPath, animated: true)
 
@@ -98,13 +101,13 @@ extension TodoListCDViewController: UISearchBarDelegate {
 
         tableView.reloadData()
     }
-    
+
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text?.count == 0 {
             dataService.loadItems()
-            
-            tableView.reloadData()           
-            
+
+            tableView.reloadData()
+
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
             }
