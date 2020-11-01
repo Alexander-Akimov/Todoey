@@ -9,10 +9,10 @@
 import UIKit
 import CoreData
 
-class GenericDataService<T>: DataServiceProtocol where T: NSManagedObject {
+class GenericDataService<T>/*: GenericDataProtocol*/ where T: NSManagedObject {
 
     var itemsArray = [T]()
-
+/*
     private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     func getItemsCount() -> Int {
@@ -56,5 +56,5 @@ class GenericDataService<T>: DataServiceProtocol where T: NSManagedObject {
         } catch {
             print("Error fetching data from context \(error)")
         }
-    }
+    }*/
 }

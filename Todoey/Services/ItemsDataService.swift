@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import CoreData
 
 class ItemsDataService: BaseDataService<Item>, DataServiceProtocol {
 
@@ -17,47 +16,76 @@ class ItemsDataService: BaseDataService<Item>, DataServiceProtocol {
 
     var selectedCategory: Category?
 
-    func getItem(by index: Int) -> TodoItemDTO {
-        return ts.translate(from: items[index])
+    func get(by index: Int) -> TodoItemDTO {
+        guard let item = get(by: index) else { return TodoItemDTO.empty }
+        return ts.translate(from: item)
     }
 
-    func addItem(_ todoItem: TodoItemDTO) {
-        if let item = ts.translate(from: todoItem, with: context) {
-            item.parentCategory = selectedCategory
-            items.append(item)
+    func add(_ todoItem: TodoItemDTO) {
+        do {
+            try realm.write {
+                if let item = ts.translate(from: todoItem), let cat = selectedCategory {
+                    cat.items.append(item)
+                    realm.add(item)
+                }
+            }
+        } catch {
+            print("Error adding new items, \(error)")
         }
     }
 
-    func updateItem(_ todoItem: TodoItemDTO, at index: Int) {
-        let item = items[index]
-        item.done = todoItem.isDone
-        item.title = todoItem.title
+    func update(_ todoItem: TodoItemDTO, at index: Int) {
+        guard let item = get(by: index) else { return }
+
+        do {
+            try realm.write {
+                item.done = todoItem.isDone
+            }
+        } catch {
+            print("Error updating \(error)")
+        }
     }
 
-    func deleteItem(at index: Int) {
-        let item = items[index]
-        items.remove(at: index)
-        context.delete(item)
+    override func loadItems() {
+        self.items = selectedCategory?.items
+        //.sorted(byKeyPath: K.Item.title, ascending: true)
+        .sorted(byKeyPath: K.Item.dateCreated, ascending: false)
     }
 
     func searchItems(by text: String) {
+        let predicate = NSPredicate(format: "\(K.Item.title) CONTAINS[cd] %@", text)
+        items = items?.filter(predicate)
+        //.sorted(byKeyPath: "title", ascending: true)
+        .sorted(byKeyPath: K.Item.dateCreated, ascending: true)
 
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", text)
-
-        loadItemsTemp(with: request)
-    }
-    
-    private func loadItemsTemp(with request: NSFetchRequest<Item>? = nil) {
-        
-        guard let cat = selectedCategory else { return }
-        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", cat.name!)
-        
-        loadItems(with: request, predicate: categoryPredicate)
+//        let request: NSFetchRequest<Item> = Item.fetchRequest()
+//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+//        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", text)
+//
+//        loadItemsTemp(with: request)
     }
 
-    func loadCategoryItems() {
-        loadItemsTemp()
+//    private func loadItemsTemp(with request: NSFetchRequest<Item>? = nil) {
+//
+//        guard let cat = selectedCategory else { return }
+//        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", cat.name!)
+//
+//        loadItems(with: request, predicate: categoryPredicate)
+    //  }
+
+    func test() {
+        //        let data = MyData()
+        //        data.name = "Angela"
+        //        data.age = 31
+
+                /*     do {
+                    let realm = try Realm()
+        //            try realm.write {
+        //                realm.add(data)
+        //            }
+
+                } catch {
+                    print("Error initialising new realm, \(error)")
+                }*/
     }
 }

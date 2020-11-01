@@ -13,4 +13,9 @@ protocol DtoProtocol { }
 struct TodoItemDTO: Codable, DtoProtocol {
     let title: String
     var isDone: Bool
+    var dateCreated: Date?
+}
+
+extension TodoItemDTO {
+    static var empty = TodoItemDTO(title: "No Items Added", isDone: false, dateCreated: nil)
 }

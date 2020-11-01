@@ -14,7 +14,7 @@ class TodoListCDViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        dataService.loadCategoryItems()
+        dataService.loadItems()
     }
 
     func setCategory(category: Category) {
@@ -30,9 +30,8 @@ class TodoListCDViewController: UITableViewController {
         let action = UIAlertAction(title: K.AddItem.alertTitle, style: .default) { (action) in
             //what will happen once the user clicks the Add Item Button on our UIAlert
 
-            let newItem = TodoItemDTO(title: textField.text!, isDone: false)
-            self.dataService.addItem(newItem)
-            self.dataService.saveItems()
+            let newItem = TodoItemDTO(title: textField.text!, isDone: false, dateCreated: Date())
+            self.dataService.add(newItem)
 
             self.tableView.reloadData()
         }
@@ -59,14 +58,15 @@ class TodoListCDViewController: UITableViewController {
 extension TodoListCDViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataService.getItemsCount()
+        return dataService.count
+
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         let todoItemCell = tableView.dequeueReusableCell(withIdentifier: K.todoItemCell, for: indexPath)
 
-        let item = dataService.getItem(by: indexPath.row)
+        let item = dataService.get(by: indexPath.row)
 
         todoItemCell.configure(item)
 
@@ -79,18 +79,20 @@ extension TodoListCDViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        var item = dataService.getItem(by: indexPath.row)
+        var item = dataService.get(by: indexPath.row)
+
         item.isDone = !item.isDone
 
-        dataService.updateItem(item, at: indexPath.row)
-        dataService.saveItems()
+        dataService.update(item, at: indexPath.row)
+
 
         tableView.reloadRows(at: [indexPath], with: .middle)
         tableView.deselectRow(at: indexPath, animated: true)
 
-        /*  dataService.deleteItem(at: indexPath.row)
-        dataService.saveItems()
-        tableView.deleteRows(at: [indexPath], with: .automatic)*/
+        /*
+         dataService.delete(at: indexPath.row)        
+        tableView.deleteRows(at: [indexPath], with: .automatic)
+         */
     }
 }
 
@@ -105,8 +107,8 @@ extension TodoListCDViewController: UISearchBarDelegate {
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text?.count == 0 {
-            dataService.loadCategoryItems()
-            
+            dataService.loadItems()
+
             tableView.reloadData()
 
             DispatchQueue.main.async {

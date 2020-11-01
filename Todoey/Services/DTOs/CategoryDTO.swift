@@ -9,5 +9,8 @@
 import Foundation
 
 struct CategoryDTO {
-    let name: String
+    let name: String    
+}
+extension CategoryDTO {
+    static var empty = CategoryDTO(name: "No Categories Added")
 }

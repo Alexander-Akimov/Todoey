@@ -26,8 +26,7 @@ class CategoryViewController: UITableViewController {
             //what will happen once the user clicks the Add Item Button on our UIAlert
 
             let newCat = CategoryDTO(name: textField.text!)
-            self.dataService.addItem(newCat)
-            self.dataService.saveItems()
+            self.dataService.add(newCat)
 
             self.tableView.reloadData()
         }
@@ -48,23 +47,20 @@ class CategoryViewController: UITableViewController {
     @objc func dismissOnTapOutside() {
         self.dismiss(animated: true, completion: nil)
     }
-
-
-
 }
 
 //MARK: - TableView DataSource Methods
 extension CategoryViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataService.getItemsCount()
+        return dataService.count        
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         let categoryCell = tableView.dequeueReusableCell(withIdentifier: K.categoryCell, for: indexPath)
 
-        let item = dataService.getItem(by: indexPath.row)
+        let item = dataService.get(by: indexPath.row)
 
         categoryCell.configure(item)
 
@@ -76,16 +72,12 @@ extension CategoryViewController {
 extension CategoryViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
-
-
         //dataService.updateItem(item, at: indexPath.row)
 
         performSegue(withIdentifier: "goToItems", sender: self)
 
         //tableView.reloadRows(at: [indexPath], with: .middle)
         //tableView.deselectRow(at: indexPath, animated: true)
-
     }
 
     // MARK: - Navigation
@@ -98,7 +90,7 @@ extension CategoryViewController {
         let destinationVC = segue.destination as! TodoListCDViewController
 
         if let indexPath = tableView.indexPathForSelectedRow {
-            if let category = dataService.getEntity(by: indexPath.row) {
+            if let category = dataService.getObject(by: indexPath.row) {
                 destinationVC.setCategory(category: category)
             }
         }

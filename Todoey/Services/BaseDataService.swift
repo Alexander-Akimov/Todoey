@@ -6,57 +6,98 @@
 //  Copyright © 2020 App Brewery. All rights reserved.
 //
 
-import CoreData
+import RealmSwift
 import UIKit
 
-class BaseDataService<T> where T: NSManagedObject {
 
-    var items = [T]()
+class BaseDataService<T> where T: Object {
 
-    internal let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    let realm: Realm
 
-    func getItemsCount() -> Int {
-        return items.count
+    var items: Results<T>?
+
+    init() {
+        Self.initRealm()
+        realm = try! Realm()
     }
 
-    func getCount() -> Int {
-        let request: NSFetchRequest<T> = NSFetchRequest<T>(entityName: T.entity().name!)
-        var count = 0
+    func get(by index: Int) -> T? {
+        return items?[index]
+    }
 
+    var count: Int { items?.count ?? 1 }
+
+    func getObject(by index: Int) -> T? {
+        guard let items = items else { return nil }
+        guard index < items.count, (index >= 0) else { return nil }
+        return items[index]
+    }
+
+    func delete (at index: Int) {
+        guard let item = items?[index] else { return }
         do {
-            count = try context.count(for: request)
+            try realm.write {
+                realm.delete(item)
+            }
         } catch {
-            print("Error saving context \(error)")
+            print("Error deleting new items, \(error)")
         }
-        return count
     }
 
-    func saveItems() {
+    func save(item: T) {
         do {
-            try context.save()
+            try realm.write {
+                realm.add(item)
+            }
         } catch {
-            print("Error saving context \(error)")
+            print("Error adding new items, \(error)")
         }
     }
 
     func loadItems() {
-        loadItems(with: nil)
+        self.items = realm.objects(T.self)
     }
 
-    internal func loadItems(with request: NSFetchRequest<T>? = nil, predicate: NSPredicate? = nil) {
+    private static func initRealm() {
+        //        var key = Data(count: 64)
+        //
+        //        _ = key.withUnsafeMutableBytes { bytes in
+        //            SecRandomCopyBytes(kSecRandomDefault, 64, bytes)
+        //        }
+        //        let temp = key.hexEncodedString()
+        //
+        let config = Realm.Configuration(
+            //            encryptionKey: key,
+            schemaVersion: 1,
+            migrationBlock: { migration, oldSchemaVersion in
+                if (oldSchemaVersion < 1) {
+                    migration.enumerateObjects(ofType: Item.className()) { oldObject, newObject in
+                        newObject![K.Item.dateCreated] = Date(timeIntervalSinceNow: 50000)
+                    }
+                }
+            }
+        )
+        //        config.deleteRealmIfMigrationNeeded = true
 
-        let newReq = request ?? NSFetchRequest<T>(entityName: T.entity().name!)
+        Realm.Configuration.defaultConfiguration = config
 
-        let res = [newReq.predicate, predicate].compactMap { $0 }
-
-        if res.count > 0 {
-            newReq.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: res)
-        }
-
-        do {
-            self.items = try context.fetch(newReq)
-        } catch {
-            print("Error fetching data from context \(error)")
-        }
+        //_ = try! Realm()
     }
+
+//    internal func loadItems(with request: NSFetchRequest<T>? = nil, predicate: NSPredicate? = nil) {
+//
+//        let newReq = request ?? NSFetchRequest<T>(entityName: T.entity().name!)
+//
+//        let res = [newReq.predicate, predicate].compactMap { $0 }
+//
+//        if res.count > 0 {
+//            newReq.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: res)
+//        }
+//
+//        do {
+//            self.items = try context.fetch(newReq)
+//        } catch {
+//            print("Error fetching data from context \(error)")
+//        }
+//    }
 }

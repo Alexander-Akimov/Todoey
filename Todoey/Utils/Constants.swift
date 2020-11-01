@@ -32,4 +32,9 @@ struct K {
         static let encode = "Error encoding item array, %s"
         static let decode = "Error decoding item array, %s"
     }
+    
+    struct Item {
+        static let title = "title"
+        static let dateCreated = "dateCreated"
+    }
 }

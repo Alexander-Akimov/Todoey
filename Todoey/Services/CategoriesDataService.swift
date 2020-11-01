@@ -15,28 +15,24 @@ class CategoriesDataService: BaseDataService<Category>, DataServiceProtocol {
 
     private var ts = TranslationService()
 
-    func getItem(by index: Int) -> CategoryDTO {
-        return items[index].toDto()
+    func get(by index: Int) -> CategoryDTO {
+        guard let item = items?[index] else { return CategoryDTO.empty }
+        return item.toDto()
     }
 
-    func getEntity(by index: Int) -> Category? {
-        guard index < items.count, index >= 0 else { return nil }
-        return items[index]
+    func add(_ dto: CategoryDTO) {
+        let category = dto.toRealmObject()
+        save(item: category)
     }
 
-    func addItem(_ dto: CategoryDTO) {
-        let category = dto.toEntity(with: context)
-        items.append(category)
+    func update(_ dto: CategoryDTO, at index: Int) {
+//        let category = items[index]
+//        category.name = dto.name
     }
 
-    func updateItem(_ dto: CategoryDTO, at index: Int) {
-        let category = items[index]
-        category.name = dto.name
-    }
-
-    func deleteItem(at index: Int) {
-        let item = items[index]
-        items.remove(at: index)
-        context.delete(item)
+    override func delete(at index: Int) {
+//        let item = items[index]
+        // items.remove(at: index)
+        // context.delete(item)
     }
 }
