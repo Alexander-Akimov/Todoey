@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import SwipeCellKit
 
-class TodoListCDViewController: UITableViewController {
+class TodoListCDViewController: SwipeTableViewController {
 
     private let dataService = ItemsDataService()
 
@@ -52,6 +53,11 @@ class TodoListCDViewController: UITableViewController {
     @objc func dismissOnTapOutside() {
         self.dismiss(animated: true, completion: nil)
     }
+
+    //MARK: - Delete on swipe
+    override func onDeleteAction(at index: Int) {
+        self.dataService.delete(at: index)
+    }
 }
 
 //MARK: - TableView DataSource Methods
@@ -64,8 +70,7 @@ extension TodoListCDViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let todoItemCell = tableView.dequeueReusableCell(withIdentifier: K.todoItemCell, for: indexPath)
-
+        let todoItemCell = super.tableView(tableView, cellForRowAt: indexPath)
         let item = dataService.get(by: indexPath.row)
 
         todoItemCell.configure(item)
@@ -84,7 +89,6 @@ extension TodoListCDViewController {
         item.isDone = !item.isDone
 
         dataService.update(item, at: indexPath.row)
-
 
         tableView.reloadRows(at: [indexPath], with: .middle)
         tableView.deselectRow(at: indexPath, animated: true)
@@ -117,4 +121,3 @@ extension TodoListCDViewController: UISearchBarDelegate {
         }
     }
 }
-

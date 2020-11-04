@@ -10,7 +10,7 @@ import Foundation
 
 struct K {
 
-    static let categoryCell = "CategoryCell"
+    static let cellName = "Cell"
     static let todoItemCell = "TodoItemCell"
     static let plistFileName = "Items.plist"
 

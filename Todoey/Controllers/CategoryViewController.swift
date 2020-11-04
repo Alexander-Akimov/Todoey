@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
 
     private let dataService = CategoriesDataService()
 
@@ -47,24 +47,28 @@ class CategoryViewController: UITableViewController {
     @objc func dismissOnTapOutside() {
         self.dismiss(animated: true, completion: nil)
     }
+
+    override func onDeleteAction(at index: Int) {
+        // handle action by updating model with deletion
+        self.dataService.delete(at: index)
+    }
 }
 
 //MARK: - TableView DataSource Methods
 extension CategoryViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataService.count        
+        return dataService.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let categoryCell = tableView.dequeueReusableCell(withIdentifier: K.categoryCell, for: indexPath)
-
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+       
         let item = dataService.get(by: indexPath.row)
 
-        categoryCell.configure(item)
-
-        return categoryCell
+        cell.configure(item)
+        return cell
     }
 }
 
@@ -96,4 +100,3 @@ extension CategoryViewController {
         }
     }
 }
-

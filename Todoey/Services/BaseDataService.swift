@@ -40,7 +40,7 @@ class BaseDataService<T> where T: Object {
                 realm.delete(item)
             }
         } catch {
-            print("Error deleting new items, \(error)")
+            print("Error deleting items, \(error)")
         }
     }
 

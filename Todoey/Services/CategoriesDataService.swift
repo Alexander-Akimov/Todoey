@@ -31,8 +31,19 @@ class CategoriesDataService: BaseDataService<Category>, DataServiceProtocol {
     }
 
     override func delete(at index: Int) {
-//        let item = items[index]
-        // items.remove(at: index)
-        // context.delete(item)
+        
+        guard let item = items?[index] else { return }
+
+        do {
+            try realm.write {
+                for element in item.items {
+                    realm.delete(element)
+                }                
+                realm.delete(item)
+            }
+        } catch {
+            print("Error deleting items, \(error)")
+        }
+
     }
 }
