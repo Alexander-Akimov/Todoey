@@ -12,7 +12,7 @@ import CoreData
 extension Category {
 
     func toDto() -> CategoryDTO {
-        return CategoryDTO(name: self.name)
+        return CategoryDTO(name: self.name, bgColorHex: self.bgColorHex)
     }
 }
 
@@ -21,6 +21,7 @@ extension CategoryDTO {
     func toRealmObject() -> Category {
         let category = Category()
         category.name = self.name
+        category.bgColorHex = self.bgColorHex
         return category
     }
 }

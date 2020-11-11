@@ -8,14 +8,36 @@
 
 import UIKit
 import SwipeCellKit
+import ChameleonFramework
 
 class TodoListCDViewController: SwipeTableViewController {
+
+    @IBOutlet weak var searchBar: UISearchBar!
 
     private let dataService = ItemsDataService()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         dataService.loadItems()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        if let colorHex = dataService.selectedCategory?.bgColorHex {
+            title = dataService.selectedCategory!.name
+            super.configureNavBar(bgColor: colorHex)
+            self.configureSearchBar(bgColor: colorHex)
+        }
+    }
+
+    private func configureSearchBar(bgColor: String) {
+        if #available(iOS 11.0, *) {
+            searchBar.barTintColor = UIColor(hexString: bgColor)
+            
+        }
+        if #available(iOS 13.0, *) {
+            searchBar.barTintColor = UIColor(hexString: bgColor)
+            searchBar.searchTextField.backgroundColor = .white
+        }
     }
 
     func setCategory(category: Category) {
@@ -65,13 +87,16 @@ extension TodoListCDViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataService.count
-
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         let todoItemCell = super.tableView(tableView, cellForRowAt: indexPath)
         let item = dataService.get(by: indexPath.row)
+
+        let mainColor = UIColor(hexString: dataService.selectedCategory!.bgColorHex)
+
+        todoItemCell.backgroundColor = mainColor?.darken(byPercentage: CGFloat(Float(indexPath.row) / Float(dataService.count)))
 
         todoItemCell.configure(item)
 
@@ -94,7 +119,7 @@ extension TodoListCDViewController {
         tableView.deselectRow(at: indexPath, animated: true)
 
         /*
-         dataService.delete(at: indexPath.row)        
+         dataService.delete(at: indexPath.row)
         tableView.deleteRows(at: [indexPath], with: .automatic)
          */
     }

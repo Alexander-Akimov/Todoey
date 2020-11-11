@@ -37,4 +37,11 @@ struct K {
         static let title = "title"
         static let dateCreated = "dateCreated"
     }
+    
+    struct Category {
+        static let bgColorHex = "bgColorHex"
+    }
+    struct CategoryColors {
+        static let navBarColor = "1D9BF6"//"0A84FF"
+    }
 }

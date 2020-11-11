@@ -68,11 +68,17 @@ class BaseDataService<T> where T: Object {
         //
         let config = Realm.Configuration(
             //            encryptionKey: key,
-            schemaVersion: 1,
+            schemaVersion: 2,
             migrationBlock: { migration, oldSchemaVersion in
                 if (oldSchemaVersion < 1) {
                     migration.enumerateObjects(ofType: Item.className()) { oldObject, newObject in
                         newObject![K.Item.dateCreated] = Date(timeIntervalSinceNow: 50000)
+                    }
+                }
+                if (oldSchemaVersion < 2) {                    
+                    migration.enumerateObjects(ofType: Category.className()) { oldObject, newObject in
+                        let randomColorHex = UIColor.randomFlat().hexValue()
+                        newObject![K.Category.bgColorHex] = randomColorHex
                     }
                 }
             }
@@ -80,8 +86,6 @@ class BaseDataService<T> where T: Object {
         //        config.deleteRealmIfMigrationNeeded = true
 
         Realm.Configuration.defaultConfiguration = config
-
-        //_ = try! Realm()
     }
 
 //    internal func loadItems(with request: NSFetchRequest<T>? = nil, predicate: NSPredicate? = nil) {

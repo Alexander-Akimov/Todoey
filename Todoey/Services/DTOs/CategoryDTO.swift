@@ -9,8 +9,9 @@
 import Foundation
 
 struct CategoryDTO {
-    let name: String    
+    let name: String
+    let bgColorHex: String
 }
 extension CategoryDTO {
-    static var empty = CategoryDTO(name: "No Categories Added")
+    static var empty = CategoryDTO(name: "No Categories Added", bgColorHex: "")
 }

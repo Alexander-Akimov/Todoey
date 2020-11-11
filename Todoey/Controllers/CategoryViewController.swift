@@ -7,14 +7,33 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
+import ChameleonFramework
 
 class CategoryViewController: SwipeTableViewController {
 
+    @IBOutlet weak var addButton: UIBarButtonItem!
+
     private let dataService = CategoriesDataService()
+
+    let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         dataService.loadItems()
+
+        configurationBindings()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.configureNavBar(bgColor: K.CategoryColors.navBarColor)
+    }
+
+    private func configurationBindings() {
+        //        addButton.rx.tap.subscribe({
+        //            t in print(t)
+        //        }).disposed(by: disposeBag)
     }
 
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
@@ -24,8 +43,8 @@ class CategoryViewController: SwipeTableViewController {
 
         let action = UIAlertAction(title: K.AddCat.alertTitle, style: .default) { (action) in
             //what will happen once the user clicks the Add Item Button on our UIAlert
-
-            let newCat = CategoryDTO(name: textField.text!)
+            let randomColorHex = UIColor.randomFlat().hexValue()
+            let newCat = CategoryDTO(name: textField.text!, bgColorHex: randomColorHex)
             self.dataService.add(newCat)
 
             self.tableView.reloadData()
@@ -64,10 +83,11 @@ extension CategoryViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
-       
+
         let item = dataService.get(by: indexPath.row)
 
         cell.configure(item)
+
         return cell
     }
 }

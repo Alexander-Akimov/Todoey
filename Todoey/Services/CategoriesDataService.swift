@@ -36,9 +36,11 @@ class CategoriesDataService: BaseDataService<Category>, DataServiceProtocol {
 
         do {
             try realm.write {
+                //first delete category's items
                 for element in item.items {
                     realm.delete(element)
-                }                
+                }
+                //and then delete category itself
                 realm.delete(item)
             }
         } catch {

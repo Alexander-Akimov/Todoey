@@ -8,5 +8,12 @@ target 'Todoey' do
   # Pods for Todoey
   pod 'RealmSwift'
   pod 'SwipeCellKit'
+  
+  pod 'RxSwift', '6.0.0-rc.1'
+  pod 'RxCocoa', '6.0.0-rc.1'
+  
+  
+  pod 'ChameleonFramework/Swift', :git => 'https://github.com/wowansm/Chameleon.git',
+  :branch => 'swift5'
 
 end
